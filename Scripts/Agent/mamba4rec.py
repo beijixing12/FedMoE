@@ -267,7 +267,7 @@ class MambaBlock(nn.Module):
 
         x, z = xz.chunk(2, dim=1)
 
-        if causal_conv1d_fn is not None:
+        if causal_conv1d_fn is None:
             x = self.act(self.conv1d(x)[..., :seq_len])
         else:
             assert self.activation in ["silu", "swish"], (
