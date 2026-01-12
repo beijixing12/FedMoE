@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, List
 import torch
 from torch import nn
 from Scripts.Agent.mamba_sequence import MambaSequenceModel, MambaState
@@ -142,6 +142,8 @@ class SRC(nn.Module):
         lightgcn_layers=2,
         fusion_weight=0.5,
         mamba_kwargs: Optional[dict] = None,
+        num_experts: int = 1,
+        zpd_tau: float = 0.5,
     ):
         super().__init__()
         base_dir = Path(__file__).resolve().parents[2]
@@ -261,13 +263,27 @@ class SRC(nn.Module):
             **dict(default_mamba),
         )
         self.path_encoder = Transformer(hidden_size, hidden_size, 0.0, head=1, b=1, transformer_mask=False)
-        self.W1 = nn.Linear(hidden_size, weight_size, bias=False)  # blending encoder
-        self.W2 = nn.Linear(hidden_size, weight_size, bias=False)  # blending decoder
-        self.vt = nn.Linear(weight_size, 1, bias=False)  # scaling sum of enc and dec by v.T
-        self.decoder = MambaSequenceModel(
-            hidden_size,
-            hidden_size,
-            **dict(default_mamba),
+        self.W1_list = nn.ModuleList(
+            [nn.Linear(hidden_size, weight_size, bias=False) for _ in range(num_experts)]
+        )  # blending encoder
+        self.W2_list = nn.ModuleList(
+            [nn.Linear(hidden_size, weight_size, bias=False) for _ in range(num_experts)]
+        )  # blending decoder
+        self.vt_list = nn.ModuleList(
+            [nn.Linear(weight_size, 1, bias=False) for _ in range(num_experts)]
+        )  # scaling sum of enc and dec by v.T
+        self.decoders = nn.ModuleList(
+            [
+                MambaSequenceModel(
+                    hidden_size,
+                    hidden_size,
+                    **dict(default_mamba),
+                )
+                for _ in range(num_experts)
+            ]
+        )
+        self.state_proj_list = nn.ModuleList(
+            [nn.Linear(hidden_size, hidden_size) for _ in range(num_experts)]
         )
         if with_kt:
             self.ktRnn = MambaSequenceModel(
@@ -279,20 +295,43 @@ class SRC(nn.Module):
         self.allow_repeat = allow_repeat
         self.withKt = with_kt
         self.skill_num = skill_num
+        self.num_experts = num_experts
+        self.prototypes = nn.Parameter(torch.randn(num_experts, hidden_size))
+        self.router_head = nn.Linear(hidden_size * 2, 1)
+        self.zpd_tau = zpd_tau
         self._graph_embeddings = None
+        self._latest_state_output = None
+        self._hetero_graph = hetero_graph
+        self._concept_exercise = None
+        self._exercise_to_concept = None
+        self.exercise_embeddings = None
+        self.exercise_pred_head = None
+        if hetero_graph is not None:
+            self._concept_exercise = hetero_graph.concept_exercise
+            exercise_count = hetero_graph.num_exercises
+            self.exercise_embeddings = nn.Embedding(exercise_count, hidden_size)
+            self.exercise_pred_head = nn.Linear(hidden_size, hidden_size, bias=False)
+            self._exercise_to_concept = self._build_exercise_to_concept_map(
+                hetero_graph.concept_exercise
+            )
 
-    def forward(self, targets, initial_logs, initial_log_scores, origin_path, n):
+    def forward(self, targets, initial_logs, initial_log_scores, origin_path, n, expert_id=0):
         """Alias for :meth:`construct` so the module can be invoked directly."""
-        return self.construct(targets, initial_logs, initial_log_scores, origin_path, n)
+        return self.construct(targets, initial_logs, initial_log_scores, origin_path, n, expert_id=expert_id)
 
-    def begin_episode(self, targets, initial_logs, initial_log_scores):
+    def begin_episode(self, targets, initial_logs, initial_log_scores, expert_id=0):
         # targets: (B, K), where K is the num of targets in this batch
         targets = self.l2(self._embed_indices(targets).mean(dim=1, keepdim=True))  # (B, 1, H)
         batch_size = targets.size(0)
-        decoder_state = self.decoder.init_state(batch_size, targets.device, targets.dtype)
         if initial_logs is not None:
-            decoder_state = self.step(initial_logs, initial_log_scores, decoder_state)
-        return targets, decoder_state
+            self.step(initial_logs, initial_log_scores, None)
+        resolved_expert_id = self._resolve_expert_id(expert_id, batch_size)
+        decoder, _, _, _, state_proj = self._get_expert_modules(resolved_expert_id)
+        decoder_state = decoder.init_state(batch_size, targets.device, targets.dtype)
+        expert_state = None
+        if self._latest_state_output is not None:
+            expert_state = state_proj(self._latest_state_output[:, -1:, :])
+        return targets, decoder_state, expert_state, resolved_expert_id
 
     def step(self, x, score, states):
         x_embed = self._embed_indices(x)
@@ -312,18 +351,25 @@ class SRC(nn.Module):
         x = self.l1(torch.cat((x_embed, score), -1))
         if not isinstance(states, MambaState):
             states = self.state_encoder.init_state(x.shape[0], x.device, x.dtype)
-        _, states = self.state_encoder(x, states)
+        state_output, states = self.state_encoder(x, states)
+        self._latest_state_output = state_output
         return states
 
-    def construct(self, targets, initial_logs, initial_log_scores, origin_path, n):
+    def construct(self, targets, initial_logs, initial_log_scores, origin_path, n, expert_id=0):
         self._refresh_graph_embeddings()
         try:
-            targets, states = self.begin_episode(targets, initial_logs, initial_log_scores)
+            targets, states, expert_state, resolved_expert_id = self.begin_episode(
+                targets, initial_logs, initial_log_scores, expert_id=expert_id
+            )
+            decoder, W1, W2, vt, _ = self._get_expert_modules(resolved_expert_id)
+            expert_context = targets
+            if expert_state is not None:
+                expert_context = expert_context + expert_state
             inputs = self.l2(self._embed_indices(origin_path))
             encoder_states = inputs
             encoder_states = self.path_encoder(encoder_states)
             encoder_states = encoder_states + inputs
-            blend1 = self.W1(encoder_states + encoder_states.mean(dim=1, keepdim=True) + targets)  # (B, L, W)
+            blend1 = W1(encoder_states + encoder_states.mean(dim=1, keepdim=True) + expert_context)  # (B, L, W)
             decoder_input = torch.zeros_like(inputs[:, 0:1])  # (B, 1, I)
             probs, paths = [], []
             selecting_s = []
@@ -332,13 +378,13 @@ class SRC(nn.Module):
             minimum_fill = torch.full_like(inputs[:, :, 0], -1e9, dtype=inputs.dtype)
             hidden_states = []
             for i in range(n):
-                hidden, states = self.decoder(decoder_input, states)
+                hidden, states = decoder(decoder_input, states)
                 if self.withKt and i > 0:
                     hidden_states.append(hidden)
                 # Compute blended representation at each decoder time step
-                blend2 = self.W2(hidden)  # (B, 1, W)
+                blend2 = W2(hidden)  # (B, 1, W)
                 blend_sum = blend1 + blend2  # (B, L, W)
-                out = self.vt(blend_sum).squeeze(-1)  # (B, L)
+                out = vt(blend_sum).squeeze(-1)  # (B, L)
                 if not self.allow_repeat:
                     out = torch.where(selected, minimum_fill, out)
                     out = torch.softmax(out, dim=-1)
@@ -371,22 +417,28 @@ class SRC(nn.Module):
         finally:
             self._graph_embeddings = None
 
-    def backup(self, targets, initial_logs, initial_log_scores, origin_path, selecting_s):
+    def backup(self, targets, initial_logs, initial_log_scores, origin_path, selecting_s, expert_id=0):
         self._refresh_graph_embeddings()
         try:
-            targets, states = self.begin_episode(targets, initial_logs, initial_log_scores)
+            targets, states, expert_state, resolved_expert_id = self.begin_episode(
+                targets, initial_logs, initial_log_scores, expert_id=expert_id
+            )
+            decoder, W1, W2, vt, _ = self._get_expert_modules(resolved_expert_id)
+            expert_context = targets
+            if expert_state is not None:
+                expert_context = expert_context + expert_state
             inputs = self.l2(self._embed_indices(origin_path))
             encoder_states = inputs
             encoder_states = self.path_encoder(encoder_states)
             encoder_states = encoder_states + inputs
-            blend1 = self.W1(encoder_states + encoder_states.mean(dim=1, keepdim=True) + targets)  # (B, L, W)
+            blend1 = W1(encoder_states + encoder_states.mean(dim=1, keepdim=True) + expert_context)  # (B, L, W)
             batch_indices = torch.arange(encoder_states.shape[0], device=encoder_states.device).unsqueeze(1)
             selecting_states = encoder_states[batch_indices, selecting_s]
             selecting_states = torch.cat((torch.zeros_like(selecting_states[:, 0:1]), selecting_states[:, :-1]), 1)
-            hidden_states, _ = self.decoder(selecting_states, states)
-            blend2 = self.W2(hidden_states)  # (B, n, W)
+            hidden_states, _ = decoder(selecting_states, states)
+            blend2 = W2(hidden_states)  # (B, n, W)
             blend_sum = blend1.unsqueeze(1) + blend2.unsqueeze(2)  # (B, n, L, W)
-            out = self.vt(blend_sum).squeeze(-1)  # (B, n, L)
+            out = vt(blend_sum).squeeze(-1)  # (B, n, L)
             # Masking probabilities according to output order
             mask = selecting_s.unsqueeze(1).repeat(1, selecting_s.shape[-1], 1)  # (B, n, n)
             mask = torch.tril(mask + 1, -1).view(-1, mask.shape[-1])
@@ -411,6 +463,135 @@ class SRC(nn.Module):
             return self._refresh_graph_embeddings()
         return self._graph_embeddings
 
+    def _get_expert_modules(self, expert_id):
+        if not 0 <= expert_id < self.num_experts:
+            raise ValueError(f"expert_id must be in [0, {self.num_experts - 1}], got {expert_id}")
+        return (
+            self.decoders[expert_id],
+            self.W1_list[expert_id],
+            self.W2_list[expert_id],
+            self.vt_list[expert_id],
+            self.state_proj_list[expert_id],
+        )
+
+    def _resolve_expert_id(self, expert_id, batch_size):
+        if expert_id is not None:
+            self._get_expert_modules(expert_id)
+            return expert_id
+        if self._latest_state_output is None:
+            return 0
+        h_t = self._latest_state_output[:, -1, :]
+        prototypes = self.prototypes.unsqueeze(0)
+        h_t = h_t.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
+        router_input = torch.cat((h_t, prototypes), dim=-1)
+        logits = self.router_head(router_input).squeeze(-1)
+        probs = torch.sigmoid(logits)
+        distances = torch.abs(probs - self.zpd_tau)
+        expert_ids = torch.argmin(distances, dim=1)
+        unique_ids = torch.unique(expert_ids)
+        if unique_ids.numel() != 1:
+            raise ValueError(
+                "expert_id=None produced multiple experts in the batch; "
+                "provide expert_id explicitly or use a batch size of 1."
+            )
+        return int(unique_ids.item())
+
     def _embed_indices(self, indices):
         embeddings = self._get_graph_embeddings()
         return embeddings[indices]
+
+    @staticmethod
+    def _build_exercise_to_concept_map(concept_exercise: torch.Tensor) -> torch.Tensor:
+        if concept_exercise.numel() == 0:
+            return torch.empty((0,), dtype=torch.long)
+        return torch.argmax(concept_exercise, dim=0)
+
+    def _get_exercise_candidates(
+        self, concept_ids: torch.Tensor, concept_exercise: torch.Tensor
+    ) -> List[torch.Tensor]:
+        if self._concept_exercise is None:
+            raise RuntimeError(
+                "Exercise candidates requested but no heterogeneous graph was loaded."
+            )
+        concept_ids = concept_ids.view(-1).tolist()
+        candidates = []
+        for concept_id in concept_ids:
+            row = concept_exercise[concept_id]
+            exercise_ids = torch.nonzero(row, as_tuple=False).squeeze(-1)
+            if exercise_ids.numel() == 0:
+                exercise_ids = torch.tensor([concept_id], device=row.device)
+            candidates.append(exercise_ids)
+        return candidates
+
+    def _predict_exercise_probabilities(
+        self, state: torch.Tensor, exercise_ids: torch.Tensor
+    ) -> torch.Tensor:
+        if self.exercise_embeddings is None or self.exercise_pred_head is None:
+            raise RuntimeError(
+                "Exercise prediction requested but exercise embeddings are unavailable."
+            )
+        exercise_embeds = self.exercise_embeddings(exercise_ids)
+        projected_state = self.exercise_pred_head(state)
+        logits = (exercise_embeds * projected_state.unsqueeze(0)).sum(dim=-1)
+        return torch.sigmoid(logits)
+
+    def run_micro_loop(
+        self,
+        concept_path: torch.Tensor,
+        initial_logs: Optional[torch.Tensor],
+        initial_log_scores: Optional[torch.Tensor],
+        mastery_threshold: float,
+        max_practice: int = 10,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Run a per-concept micro loop and return exercises and predicted scores."""
+
+        if self._concept_exercise is None:
+            raise RuntimeError(
+                "Micro-loop requires a heterogeneous graph with exercise mappings."
+            )
+        batch_size = concept_path.shape[0]
+        device = concept_path.device
+        states = self.state_encoder.init_state(batch_size, device, concept_path.dtype)
+        if initial_logs is not None:
+            states = self.step(initial_logs, initial_log_scores, states)
+        concept_exercise = self._concept_exercise
+        exercise_to_concept = self._exercise_to_concept
+        if concept_exercise is not None and concept_exercise.device != device:
+            concept_exercise = concept_exercise.to(device)
+        if exercise_to_concept is not None and exercise_to_concept.device != device:
+            exercise_to_concept = exercise_to_concept.to(device)
+        selected_exercises = []
+        selected_scores = []
+        for step_idx in range(concept_path.shape[1]):
+            concept_ids = concept_path[:, step_idx]
+            batch_exercises = []
+            batch_scores = []
+            candidates_list = self._get_exercise_candidates(concept_ids, concept_exercise)
+            for sample_idx, candidates in enumerate(candidates_list):
+                h_t = self._latest_state_output[sample_idx, -1, :]
+                best_exercise = None
+                best_score = None
+                for _ in range(max_practice):
+                    probs = self._predict_exercise_probabilities(h_t, candidates)
+                    distances = torch.abs(probs - 0.5)
+                    best_idx = torch.argmin(distances)
+                    candidate_exercise = candidates[best_idx]
+                    score = probs[best_idx]
+                    best_exercise = candidate_exercise
+                    best_score = score
+                    if score >= mastery_threshold:
+                        break
+                batch_exercises.append(best_exercise)
+                batch_scores.append(best_score)
+            exercise_ids = torch.stack(batch_exercises).to(device)
+            scores = torch.stack(batch_scores).to(device)
+            selected_exercises.append(exercise_ids)
+            selected_scores.append(scores)
+            if exercise_to_concept is not None and exercise_ids.numel() > 0:
+                concept_update = exercise_to_concept[exercise_ids]
+            else:
+                concept_update = concept_ids
+            states = self.step(concept_update, scores, states)
+        exercise_path = torch.stack(selected_exercises, dim=1)
+        score_path = torch.stack(selected_scores, dim=1)
+        return exercise_path, score_path
