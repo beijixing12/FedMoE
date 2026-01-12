@@ -144,6 +144,7 @@ class SRC(nn.Module):
         mamba_kwargs: Optional[dict] = None,
         num_experts: int = 1,
         zpd_tau: float = 0.5,
+        num_exercises: Optional[int] = None,
     ):
         super().__init__()
         base_dir = Path(__file__).resolve().parents[2]
@@ -292,15 +293,21 @@ class SRC(nn.Module):
                 **dict(default_mamba),
             )
             self.ktMlp = MLP(hidden_size, [hidden_size // 2, hidden_size // 4, 1], dropout=dropout)
+            self.kt_exercise_proj = nn.Linear(hidden_size * 2, 1)
+            self.exercise_embedding = None
+            if num_exercises is not None:
+                self.exercise_embedding = nn.Embedding(num_exercises, hidden_size)
         self.allow_repeat = allow_repeat
         self.withKt = with_kt
         self.skill_num = skill_num
         self.num_experts = num_experts
+        self.num_exercises = num_exercises
         self.prototypes = nn.Parameter(torch.randn(num_experts, hidden_size))
         self.router_head = nn.Linear(hidden_size * 2, 1)
         self.zpd_tau = zpd_tau
         self._graph_embeddings = None
         self._latest_state_output = None
+        self._latest_states = None
 
     def forward(self, targets, initial_logs, initial_log_scores, origin_path, n, expert_id=0):
         """Alias for :meth:`construct` so the module can be invoked directly."""
@@ -312,6 +319,8 @@ class SRC(nn.Module):
         batch_size = targets.size(0)
         if initial_logs is not None:
             self.step(initial_logs, initial_log_scores, None)
+        if expert_id is None:
+            raise ValueError("expert_id must be provided; call route_expert() after micro-loop.")
         resolved_expert_id = self._resolve_expert_id(expert_id, batch_size)
         decoder, _, _, _, state_proj = self._get_expert_modules(resolved_expert_id)
         decoder_state = decoder.init_state(batch_size, targets.device, targets.dtype)
@@ -340,7 +349,31 @@ class SRC(nn.Module):
             states = self.state_encoder.init_state(x.shape[0], x.device, x.dtype)
         state_output, states = self.state_encoder(x, states)
         self._latest_state_output = state_output
+        self._latest_states = states
         return states
+
+    def step_with_output(self, x, score, states):
+        x_embed = self._embed_indices(x)
+        if score is None:
+            score = torch.zeros_like(x_embed[..., 0], dtype=x_embed.dtype, device=x_embed.device)
+        score = score.to(x_embed.dtype)
+        target_shape = x_embed.shape[:-1] + (1,)
+        score_dims = score.dim()
+        target_dims = len(target_shape)
+        if score_dims < target_dims:
+            for _ in range(target_dims - score_dims):
+                score = score.unsqueeze(-1)
+        elif score_dims > target_dims:
+            score = score.reshape(target_shape)
+        elif score.shape != target_shape:
+            score = score.reshape(target_shape)
+        x = self.l1(torch.cat((x_embed, score), -1))
+        if not isinstance(states, MambaState):
+            states = self.state_encoder.init_state(x.shape[0], x.device, x.dtype)
+        state_output, states = self.state_encoder(x, states)
+        self._latest_state_output = state_output
+        self._latest_states = states
+        return state_output, states
 
     def construct(self, targets, initial_logs, initial_log_scores, origin_path, n, expert_id=0):
         self._refresh_graph_embeddings()
@@ -477,6 +510,95 @@ class SRC(nn.Module):
         probs = torch.sigmoid(logits)
         distances = torch.abs(probs - self.zpd_tau)
         return int(torch.argmin(distances, dim=1).item())
+
+    def route_expert(self, batch_size=1):
+        return self._resolve_expert_id(None, batch_size)
+
+    def route_expert_with_state(self, state_output):
+        if state_output.dim() == 3:
+            state_output = state_output[:, -1, :]
+        if state_output.dim() != 2:
+            raise ValueError("state_output must be (B, H) or (B, T, H).")
+        prototypes = self.prototypes.unsqueeze(0)
+        h_t = state_output.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
+        router_input = torch.cat((h_t, prototypes), dim=-1)
+        logits = self.router_head(router_input).squeeze(-1)
+        probs = torch.sigmoid(logits)
+        distances = torch.abs(probs - self.zpd_tau)
+        return torch.argmin(distances, dim=1)
+
+    def predict_exercise_correctness(self, exercise_ids):
+        if not self.withKt:
+            raise RuntimeError("KT prediction requested but with_kt=False")
+        if self._latest_state_output is None:
+            raise RuntimeError("KT prediction requested before any state update")
+        h_t = self._latest_state_output[:, -1, :]
+        exercise_embeddings = self._get_exercise_embeddings(exercise_ids)
+        if exercise_embeddings.dim() == 2:
+            exercise_embeddings = exercise_embeddings.unsqueeze(1)
+        h_t = h_t.unsqueeze(1).expand(-1, exercise_embeddings.shape[1], -1)
+        kt_input = torch.cat((h_t, exercise_embeddings), dim=-1)
+        logits = self.kt_exercise_proj(kt_input).squeeze(-1)
+        return torch.sigmoid(logits)
+
+    def predict_exercise_correctness_with_state(self, state_output, exercise_ids):
+        if not self.withKt:
+            raise RuntimeError("KT prediction requested but with_kt=False")
+        if state_output.dim() == 3:
+            state_output = state_output[:, -1, :]
+        exercise_embeddings = self._get_exercise_embeddings(exercise_ids)
+        if exercise_embeddings.dim() == 2:
+            exercise_embeddings = exercise_embeddings.unsqueeze(1)
+        h_t = state_output.unsqueeze(1).expand(-1, exercise_embeddings.shape[1], -1)
+        kt_input = torch.cat((h_t, exercise_embeddings), dim=-1)
+        logits = self.kt_exercise_proj(kt_input).squeeze(-1)
+        return torch.sigmoid(logits)
+
+    def _get_exercise_embeddings(self, exercise_ids):
+        if self.exercise_embedding is not None:
+            return self.exercise_embedding(exercise_ids)
+        return self._embed_indices(exercise_ids)
+
+    def freeze_expert_params(self):
+        for module in (
+            self.decoders,
+            self.W1_list,
+            self.W2_list,
+            self.vt_list,
+            self.state_proj_list,
+        ):
+            for param in module.parameters():
+                param.requires_grad = False
+
+    def unfreeze_expert_params(self):
+        for module in (
+            self.decoders,
+            self.W1_list,
+            self.W2_list,
+            self.vt_list,
+            self.state_proj_list,
+        ):
+            for param in module.parameters():
+                param.requires_grad = True
+
+    def get_shared_state_dict(self):
+        expert_prefixes = (
+            "decoders.",
+            "W1_list.",
+            "W2_list.",
+            "vt_list.",
+            "state_proj_list.",
+        )
+        return {
+            name: value
+            for name, value in self.state_dict().items()
+            if not name.startswith(expert_prefixes)
+        }
+
+    def load_shared_state_dict(self, shared_state):
+        current = self.state_dict()
+        current.update(shared_state)
+        self.load_state_dict(current)
 
     def _embed_indices(self, indices):
         embeddings = self._get_graph_embeddings()

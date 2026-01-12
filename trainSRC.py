@@ -21,6 +21,7 @@ import torch
 from torch.optim import Adam
 from torch.optim.lr_scheduler import LambdaLR
 from tqdm import tqdm
+import torch.nn.functional as F
 
 from KTScripts.DataLoader import KTDataset
 from KTScripts.utils import set_random_seed
@@ -45,13 +46,23 @@ def _build_visual_path(args, run_idx):
     return os.path.join(args.visual_dir, f'{args.exp_name}_{args.path}{run_suffix}')
 
 
+def _configure_optimizer(model, lr):
+    return Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
+
+
 def _train_and_evaluate(args, run_idx, run_seed):
     print('=' * 20 + f' Run {run_idx + 1}/{args.num_runs} ' + '=' * 20)
     if run_seed >= 0:
         print(f'Using random seed: {run_seed}')
     set_random_seed(run_seed)
     dataset = KTDataset(os.path.join(args.data_dir, args.dataset))
-    env = KESEnv(dataset, args.model, args.dataset)
+    env = KESEnv(
+        dataset,
+        args.model,
+        args.dataset,
+        concept_exercise_map=args.concept_exercise_map,
+        mastery_threshold=args.mastery_threshold,
+    )
     args.skill_num = env.skill_num
     # Create Agent
     model = load_agent(args).to(args.device)
@@ -60,20 +71,33 @@ def _train_and_evaluate(args, run_idx, run_seed):
         state_dict = torch.load(f'{model_path}.pt', map_location=args.device)
         model.load_state_dict(state_dict)
         print(f"Load Model From {model_path}")
-    # Optimizer
     model.train()
-    optimizer = Adam(model.parameters(), lr=args.lr)
-    scheduler = LambdaLR(optimizer, lr_lambda=lambda step: (1 - min(step, 200) / 200) ** 0.5)
     criterion = pl_loss
     model_with_loss = ModelWithLoss(model, criterion)
-    model_train = ModelWithOptimizer(model_with_loss, optimizer)
+    model_train = None
+    scheduler = None
     all_mean_rewards, all_rewards = [], []
     skill_num, batch_size = args.skill_num, args.batch_size
     targets, result = None, None
     best_reward = -1e9
     print('-' * 20 + "Training Start" + '-' * 20)
     
-    for epoch in range(args.num_epochs):
+    stage1_epochs = args.stage1_epochs or 0
+    stage2_epochs = args.stage2_epochs or 0
+    total_epochs = stage1_epochs + stage2_epochs
+    if total_epochs == 0:
+        total_epochs = args.num_epochs
+        stage2_epochs = total_epochs
+    expert_id = 0
+    for epoch in range(total_epochs):
+        if epoch < stage1_epochs:
+            model.freeze_expert_params()
+            optimizer = _configure_optimizer(model, args.lr)
+        else:
+            model.unfreeze_expert_params()
+            optimizer = _configure_optimizer(model, args.lr)
+        scheduler = LambdaLR(optimizer, lr_lambda=lambda step: (1 - min(step, 200) / 200) ** 0.5)
+        model_train = ModelWithOptimizer(model_with_loss, optimizer)
         avg_time = 0
         epoch_mean_rewards = []
         for i in tqdm(range(200)):
@@ -84,11 +108,25 @@ def _train_and_evaluate(args, run_idx, run_seed):
             origin_path = origin_path.to(args.device)
             initial_log_scores = env.begin_episode(targets, initial_logs)
             data = (targets, initial_logs, initial_log_scores, origin_path, args.steps)
-            result = model(*data)
-            env.n_step(result[0], binary=True)
+            result = model(*data, expert_id=expert_id)
+            scores = env.n_step(result[0], binary=args.binary)
             rewards = env.end_episode()
+            if args.concept_exercise_map:
+                _, _, routed_experts = env.run_micro_loop(model, result[0], device=args.device)
+                expert_id = int(routed_experts[0, -1].item())
             rewards_tensor = rewards.to(args.device) if isinstance(rewards, torch.Tensor) else torch.tensor(rewards, device=args.device)
-            loss = model_train(*data[:-1], result[2], rewards_tensor).item()
+            if epoch < stage1_epochs and args.withKT:
+                kt_output = result[3]
+                kt_targets = scores.to(args.device)
+                if kt_targets.dim() == 2:
+                    kt_targets = kt_targets.unsqueeze(-1)
+                loss = F.binary_cross_entropy(kt_output, kt_targets)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                loss = loss.item()
+            else:
+                loss = model_train(*data[:-1], result[2], rewards_tensor).item()
             mean_reward = rewards_tensor.mean().item()
             avg_time += time.perf_counter() - t0
             epoch_mean_rewards.append(mean_reward)
@@ -111,6 +149,7 @@ def _train_and_evaluate(args, run_idx, run_seed):
     test_rewards = []
     model_with_loss.eval()
     model.load_state_dict(torch.load(f'{model_path}.pt', map_location=args.device))
+    expert_id = 0
     for i in tqdm(range(200)):
         targets, initial_logs, origin_path = get_data(batch_size, skill_num, 3, 10, args.path, args.steps)
         targets = targets.to(args.device)
@@ -118,9 +157,12 @@ def _train_and_evaluate(args, run_idx, run_seed):
         origin_path = origin_path.to(args.device)
         initial_log_scores = env.begin_episode(targets, initial_logs)
         data = (targets, initial_logs, initial_log_scores, origin_path, args.steps)
-        result = model(*data)
+        result = model(*data, expert_id=expert_id)
         env.n_step(result[0], binary=True)
         rewards = env.end_episode()
+        if args.concept_exercise_map:
+            _, _, routed_experts = env.run_micro_loop(model, result[0], device=args.device)
+            expert_id = int(routed_experts[0, -1].item())
         rewards_tensor = rewards.to(args.device) if isinstance(rewards, torch.Tensor) else torch.tensor(rewards, device=args.device)
         loss = criterion(result[1], rewards_tensor).item()
         mean_reward = rewards_tensor.mean().item()
@@ -147,4 +189,3 @@ if __name__ == '__main__':
         for idx, reward in enumerate(run_results):
             print(f'Run {idx + 1}: Mean Reward for Test = {reward}')
         print(f'Average Mean Reward over {len(run_results)} runs: {np.mean(run_results)}')
-
