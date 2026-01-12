@@ -35,7 +35,12 @@ class KESEnv():
         self.states = (None, None)
         self.initial_score = None
         self.exercise_feedback = self._build_exercise_feedback(dataset)
-        self.concept_exercise_map = self._load_concept_exercise_map(concept_exercise_map)
+        (
+            self.concept_exercise_map,
+            self.exercise_error_rate,
+            self.difficulty_bins,
+            self.difficulty_counts,
+        ) = self._load_concept_exercise_map(concept_exercise_map)
         self.mastery_threshold = mastery_threshold
 
     def exam(self, targets, states):
@@ -167,7 +172,22 @@ class KESEnv():
     @staticmethod
     def _load_concept_exercise_map(mapping_path):
         if mapping_path is None:
-            return None
+            return None, None, None, None
         path = Path(mapping_path)
         with path.open("r", encoding="utf-8") as f:
-            return json.load(f)
+            payload = json.load(f)
+        if isinstance(payload, dict) and "concept_exercise_map" in payload:
+            return (
+                payload.get("concept_exercise_map"),
+                payload.get("exercise_error_rate"),
+                payload.get("difficulty_bins"),
+                payload.get("difficulty_counts"),
+            )
+        return payload, None, None, None
+
+    def get_difficulty_payload(self):
+        return {
+            "exercise_error_rate": self.exercise_error_rate,
+            "difficulty_bins": self.difficulty_bins,
+            "difficulty_counts": self.difficulty_counts,
+        }
