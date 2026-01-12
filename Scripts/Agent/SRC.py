@@ -527,6 +527,15 @@ class SRC(nn.Module):
         distances = torch.abs(probs - self.zpd_tau)
         return torch.argmin(distances, dim=1)
 
+    def update_prototypes(self, prototypes: torch.Tensor):
+        if prototypes.dim() != 2:
+            raise ValueError("prototypes must have shape (K, H)")
+        if prototypes.shape[1] != self.prototypes.shape[1]:
+            raise ValueError("prototypes hidden size mismatch")
+        if prototypes.shape[0] != self.prototypes.shape[0]:
+            raise ValueError("prototypes count mismatch")
+        self.prototypes.data.copy_(prototypes.to(self.prototypes.device, self.prototypes.dtype))
+
     def predict_exercise_correctness(self, exercise_ids):
         if not self.withKt:
             raise RuntimeError("KT prediction requested but with_kt=False")
