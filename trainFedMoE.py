@@ -14,7 +14,7 @@
 # ============================================================================
 import copy
 from argparse import ArgumentParser
-from typing import Dict, Iterable, List
+from typing import Dict, List
 
 import torch
 
@@ -25,45 +25,79 @@ from Scripts.federated_server import (
 )
 from Scripts.options import get_options
 from Scripts.utils import get_data, load_agent
-from Scripts.Agent.utils import pl_loss
 
 
-def fedavg_state_dicts(state_dicts: Iterable[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
-    state_dicts = list(state_dicts)
-    if not state_dicts:
-        raise ValueError("No state dicts provided for FedAvg.")
-    averaged: Dict[str, torch.Tensor] = {}
-    for key in state_dicts[0].keys():
-        stacked = torch.stack([sd[key].float() for sd in state_dicts], dim=0)
-        averaged[key] = stacked.mean(dim=0)
-    return averaged
+def _estimate_state_bytes(state_dict: Dict[str, torch.Tensor]) -> int:
+    total = 0
+    for value in state_dict.values():
+        total += value.numel() * value.element_size()
+    return total
 
 
-def local_train_step(model, env, args, expert_id: int) -> int:
-    model.train()
-    optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    for _ in range(args.local_steps):
-        targets, initial_logs, origin_path = get_data(
-            args.batch_size, args.skill_num, 3, 10, args.path, args.steps
-        )
-        targets = targets.to(args.device)
-        initial_logs = initial_logs.to(args.device)
-        origin_path = origin_path.to(args.device)
-        initial_log_scores = env.begin_episode(targets, initial_logs)
-        data = (targets, initial_logs, initial_log_scores, origin_path, args.steps)
-        result = model(*data, expert_id=expert_id)
-        rewards = env.end_episode()
-        rewards_tensor = rewards.to(args.device) if isinstance(rewards, torch.Tensor) else torch.tensor(
-            rewards, device=args.device
-        )
-        loss = pl_loss(result[2], rewards_tensor)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        if args.concept_exercise_map:
-            _, _, routed_experts = env.run_micro_loop(model, result[0], device=args.device)
-            expert_id = int(routed_experts[0, -1].item())
-    return expert_id
+def _collect_routing_distribution(model, env, args, batches: int) -> List[float]:
+    model.eval()
+    expert_ids = []
+    with torch.no_grad():
+        for _ in range(batches):
+            targets, initial_logs, origin_path = get_data(
+                args.batch_size, args.skill_num, 3, 10, args.path, args.steps
+            )
+            targets = targets.to(args.device)
+            initial_logs = initial_logs.to(args.device)
+            origin_path = origin_path.to(args.device)
+            initial_log_scores = env.begin_episode(targets, initial_logs)
+            data = (targets, initial_logs, initial_log_scores, origin_path, args.steps)
+            model(*data, expert_id=0)
+            state_output = model._latest_state_output
+            if state_output is None:
+                continue
+            if state_output.dim() == 3:
+                state_output = state_output[:, -1, :]
+            if state_output.dim() != 2:
+                continue
+            proto_dim = model.prototypes.shape[1]
+            state_dim = state_output.shape[1]
+            if state_dim > proto_dim:
+                state_output = state_output[:, :proto_dim]
+            elif state_dim < proto_dim:
+                pad = torch.zeros(
+                    state_output.shape[0],
+                    proto_dim - state_dim,
+                    device=state_output.device,
+                    dtype=state_output.dtype,
+                )
+                state_output = torch.cat([state_output, pad], dim=1)
+            routed = model.route_expert_with_state(state_output).detach().cpu()
+            expert_ids.append(routed)
+    if not expert_ids:
+        return []
+    stacked = torch.cat(expert_ids, dim=0)
+    counts = torch.bincount(stacked, minlength=model.num_experts).float()
+    distribution = (counts / counts.sum()).tolist()
+    return distribution
+
+
+def _evaluate_round(model, env, args, batches: int) -> float:
+    model.eval()
+    rewards = []
+    with torch.no_grad():
+        for _ in range(batches):
+            targets, initial_logs, origin_path = get_data(
+                args.batch_size, args.skill_num, 3, 10, args.path, args.steps
+            )
+            targets = targets.to(args.device)
+            initial_logs = initial_logs.to(args.device)
+            origin_path = origin_path.to(args.device)
+            initial_log_scores = env.begin_episode(targets, initial_logs)
+            data = (targets, initial_logs, initial_log_scores, origin_path, args.steps)
+            result = model(*data, expert_id=0)
+            env.n_step(result[0], binary=args.binary)
+            rewards_tensor = env.end_episode()
+            if isinstance(rewards_tensor, torch.Tensor):
+                rewards.append(rewards_tensor.mean().item())
+            else:
+                rewards.append(torch.tensor(rewards_tensor).mean().item())
+    return sum(rewards) / max(len(rewards), 1)
 
 
 def build_server_prototypes(model, payload_path: str) -> torch.Tensor:
@@ -100,41 +134,36 @@ def run_federated(args):
             server_prototypes = update_prototypes_ema(
                 server_prototypes,
                 prototypes,
-                stage=args.stage,
+                stage="stage2",
                 mu_stage1=args.mu_stage1,
                 mu_stage2=args.mu_stage2,
-                freeze_stage2=args.freeze_stage2,
+                freeze_stage2=False,
             )
             for model in models:
                 model.update_prototypes(server_prototypes)
-        expert_id = 0
-        client_shared_states = []
-        for model, env in zip(models, envs):
-            expert_id = local_train_step(model, env, args, expert_id)
-            client_shared_states.append(model.get_shared_state_dict())
-        aggregated = fedavg_state_dicts(client_shared_states)
+        shared_state = server_model.state_dict()
+        comm_bytes = _estimate_state_bytes(shared_state)
         for model in models:
-            model.load_shared_state_dict(aggregated)
-        server_model.load_shared_state_dict(aggregated)
-        if args.difficulty_payload:
-            mu = args.mu_stage2 if args.stage != "stage1" else args.mu_stage1
-            print(
-                f"Completed round {round_idx + 1}/{args.rounds} "
-                f"(stage={args.stage}, mu={mu:.3f})"
-            )
-        else:
-            print(f"Completed round {round_idx + 1}/{args.rounds}")
+            model.load_state_dict(shared_state)
+        reward_mean = _evaluate_round(server_model, envs[0], args, args.eval_batches)
+        routing_distribution = _collect_routing_distribution(
+            server_model, envs[0], args, args.routing_batches
+        )
+        print(
+            f"Completed round {round_idx + 1}/{args.rounds} "
+            f"(reward={reward_mean:.4f}, comm_bytes={comm_bytes}, local_training=disabled)"
+        )
+        print(f"Routing distribution: {routing_distribution}")
 
 
 if __name__ == "__main__":
     parser = ArgumentParser("FedMoE Training")
     parser.add_argument("--rounds", type=int, default=5)
     parser.add_argument("--clients", type=int, default=2)
-    parser.add_argument("--local_steps", type=int, default=1)
     parser.add_argument("--difficulty_payload", type=str, default=None)
-    parser.add_argument("--stage", type=str, default="stage1", choices=["stage1", "stage2"])
+    parser.add_argument("--eval_batches", type=int, default=5)
+    parser.add_argument("--routing_batches", type=int, default=5)
     parser.add_argument("--mu_stage1", type=float, default=0.2)
     parser.add_argument("--mu_stage2", type=float, default=0.8)
-    parser.add_argument("--freeze_stage2", action="store_true", default=False)
     args = get_options(parser, {"agent": "SRC", "simulator": "KES"})
     run_federated(args)

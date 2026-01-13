@@ -503,10 +503,13 @@ class SRC(nn.Module):
         if batch_size != 1:
             raise ValueError("expert_id=None requires batch_size=1 for routing.")
         h_t = self._latest_state_output[:, -1, :]
-        prototypes = self.prototypes.unsqueeze(0)
+        prototypes = self.prototypes.unsqueeze(0).expand(h_t.shape[0], -1, -1)
         h_t = h_t.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
         router_input = torch.cat((h_t, prototypes), dim=-1)
-        logits = self.router_head(router_input).squeeze(-1)
+        if self.withKt:
+            logits = self.kt_exercise_proj(router_input).squeeze(-1)
+        else:
+            logits = self.router_head(router_input).squeeze(-1)
         probs = torch.sigmoid(logits)
         distances = torch.abs(probs - self.zpd_tau)
         return int(torch.argmin(distances, dim=1).item())
@@ -519,10 +522,13 @@ class SRC(nn.Module):
             state_output = state_output[:, -1, :]
         if state_output.dim() != 2:
             raise ValueError("state_output must be (B, H) or (B, T, H).")
-        prototypes = self.prototypes.unsqueeze(0)
+        prototypes = self.prototypes.unsqueeze(0).expand(state_output.shape[0], -1, -1)
         h_t = state_output.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
         router_input = torch.cat((h_t, prototypes), dim=-1)
-        logits = self.router_head(router_input).squeeze(-1)
+        if self.withKt:
+            logits = self.kt_exercise_proj(router_input).squeeze(-1)
+        else:
+            logits = self.router_head(router_input).squeeze(-1)
         probs = torch.sigmoid(logits)
         distances = torch.abs(probs - self.zpd_tau)
         return torch.argmin(distances, dim=1)
