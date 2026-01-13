@@ -1,0 +1,1355 @@
+{
+  "similarity_edges": [
+    {
+      "u": "Absolute Value",
+      "v": "Number Line",
+      "relation": "similar",
+      "rationale": "基于数轴的大小与距离",
+      "confidence": 0.7
+    },
+    {
+      "u": "Absolute Value",
+      "v": "Ordering Integers",
+      "relation": "similar",
+      "rationale": "基于数轴的大小与距离",
+      "confidence": 0.7
+    },
+    {
+      "u": "Addition Whole Numbers",
+      "v": "Addition and Subtraction Integers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition Whole Numbers",
+      "v": "Computation with Real Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition Whole Numbers",
+      "v": "Multiplication Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition Whole Numbers",
+      "v": "Multiplication and Division Integers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition Whole Numbers",
+      "v": "Subtraction Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition and Subtraction Fractions",
+      "v": "Division Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Addition and Subtraction Fractions",
+      "v": "Equivalent Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Addition and Subtraction Fractions",
+      "v": "Fraction Of",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Addition and Subtraction Fractions",
+      "v": "Multiplication Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Addition and Subtraction Integers",
+      "v": "Computation with Real Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition and Subtraction Integers",
+      "v": "Multiplication Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition and Subtraction Integers",
+      "v": "Multiplication and Division Integers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition and Subtraction Integers",
+      "v": "Subtraction Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Addition and Subtraction Positive Decimals",
+      "v": "Computation with Real Numbers",
+      "relation": "similar",
+      "rationale": "小数四则范畴",
+      "confidence": 0.74
+    },
+    {
+      "u": "Addition and Subtraction Positive Decimals",
+      "v": "Multiplication and Division Positive Decimals",
+      "relation": "similar",
+      "rationale": "小数四则范畴",
+      "confidence": 0.74
+    },
+    {
+      "u": "Algebraic Simplification",
+      "v": "Order of Operations +,-,/,* () positive reals",
+      "relation": "similar",
+      "rationale": "运算顺序与代数化简",
+      "confidence": 0.78
+    },
+    {
+      "u": "Algebraic Simplification",
+      "v": "Order of Operations All",
+      "relation": "similar",
+      "rationale": "运算顺序与代数化简",
+      "confidence": 0.78
+    },
+    {
+      "u": "Algebraic Solving",
+      "v": "Distributive Property",
+      "relation": "similar",
+      "rationale": "代数化简与等式求解",
+      "confidence": 0.79
+    },
+    {
+      "u": "Algebraic Solving",
+      "v": "Equation Solving More Than Two Steps",
+      "relation": "similar",
+      "rationale": "代数化简与等式求解",
+      "confidence": 0.79
+    },
+    {
+      "u": "Algebraic Solving",
+      "v": "Equation Solving Two or Fewer Steps",
+      "relation": "similar",
+      "rationale": "代数化简与等式求解",
+      "confidence": 0.79
+    },
+    {
+      "u": "Angles - Obtuse, Acute, and Right",
+      "v": "Angles on Parallel Lines Cut by a Transversal",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Angles - Obtuse, Acute, and Right",
+      "v": "Complementary and Supplementary Angles",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Angles - Obtuse, Acute, and Right",
+      "v": "Interior Angles Figures with More than 3 Sides",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Angles - Obtuse, Acute, and Right",
+      "v": "Interior Angles Triangle",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Angles on Parallel Lines Cut by a Transversal",
+      "v": "Complementary and Supplementary Angles",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Angles on Parallel Lines Cut by a Transversal",
+      "v": "Interior Angles Figures with More than 3 Sides",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Angles on Parallel Lines Cut by a Transversal",
+      "v": "Interior Angles Triangle",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Area Circle",
+      "v": "Area Irregular Figure",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Circle",
+      "v": "Area Parallelogram",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Circle",
+      "v": "Area Rectangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Circle",
+      "v": "Area Trapezoid",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Circle",
+      "v": "Area Triangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Circle",
+      "v": "Circumference",
+      "relation": "similar",
+      "rationale": "圆的度量相关",
+      "confidence": 0.75
+    },
+    {
+      "u": "Area Circle",
+      "v": "Perimeter of a Polygon",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Irregular Figure",
+      "v": "Area Parallelogram",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Irregular Figure",
+      "v": "Area Rectangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Irregular Figure",
+      "v": "Area Trapezoid",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Irregular Figure",
+      "v": "Area Triangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Irregular Figure",
+      "v": "Perimeter of a Polygon",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Parallelogram",
+      "v": "Area Rectangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Parallelogram",
+      "v": "Area Trapezoid",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Parallelogram",
+      "v": "Area Triangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Parallelogram",
+      "v": "Perimeter of a Polygon",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Rectangle",
+      "v": "Area Trapezoid",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Rectangle",
+      "v": "Area Triangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Rectangle",
+      "v": "Perimeter of a Polygon",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Trapezoid",
+      "v": "Area Triangle",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Trapezoid",
+      "v": "Perimeter of a Polygon",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Area Triangle",
+      "v": "Perimeter of a Polygon",
+      "relation": "similar",
+      "rationale": "平面图形度量",
+      "confidence": 0.8
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Circle Graph",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Histogram as Table or Graph",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Mean",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Median",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Mode",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Range",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Scatter Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Stem and Leaf Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Box and Whisker",
+      "v": "Table",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Calculations with Similar Figures",
+      "v": "Effect of Changing Dimensions of a Shape Prportionally",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Calculations with Similar Figures",
+      "v": "Proportion",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Calculations with Similar Figures",
+      "v": "Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Calculations with Similar Figures",
+      "v": "Scale Factor",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Calculations with Similar Figures",
+      "v": "Unit Conversion Within a System",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Calculations with Similar Figures",
+      "v": "Unit Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Choose an Equation from Given Information",
+      "v": "Linear Equations",
+      "relation": "similar",
+      "rationale": "线性模式与表达",
+      "confidence": 0.75
+    },
+    {
+      "u": "Choose an Equation from Given Information",
+      "v": "Recognize Linear Pattern",
+      "relation": "similar",
+      "rationale": "线性模式与表达",
+      "confidence": 0.75
+    },
+    {
+      "u": "Circle Graph",
+      "v": "Histogram as Table or Graph",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Circle Graph",
+      "v": "Scatter Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Circle Graph",
+      "v": "Stem and Leaf Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Circle Graph",
+      "v": "Table",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Complementary and Supplementary Angles",
+      "v": "Interior Angles Figures with More than 3 Sides",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Complementary and Supplementary Angles",
+      "v": "Interior Angles Triangle",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Computation with Real Numbers",
+      "v": "Multiplication Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Computation with Real Numbers",
+      "v": "Multiplication and Division Integers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Computation with Real Numbers",
+      "v": "Multiplication and Division Positive Decimals",
+      "relation": "similar",
+      "rationale": "小数四则范畴",
+      "confidence": 0.74
+    },
+    {
+      "u": "Computation with Real Numbers",
+      "v": "Subtraction Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Congruence",
+      "v": "Reflection",
+      "relation": "similar",
+      "rationale": "平面刚体变换与全等",
+      "confidence": 0.79
+    },
+    {
+      "u": "Congruence",
+      "v": "Rotations",
+      "relation": "similar",
+      "rationale": "平面刚体变换与全等",
+      "confidence": 0.79
+    },
+    {
+      "u": "Congruence",
+      "v": "Translations",
+      "relation": "similar",
+      "rationale": "平面刚体变换与全等",
+      "confidence": 0.79
+    },
+    {
+      "u": "Conversion of Fraction Decimals Percents",
+      "v": "Finding Percents",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Conversion of Fraction Decimals Percents",
+      "v": "Percent Discount",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Conversion of Fraction Decimals Percents",
+      "v": "Percent Of",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Conversion of Fraction Decimals Percents",
+      "v": "Percents",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Conversion of Fraction Decimals Percents",
+      "v": "Unit Conversion Within a System",
+      "relation": "similar",
+      "rationale": "数值与单位转换",
+      "confidence": 0.72
+    },
+    {
+      "u": "Counting Methods",
+      "v": "D.4.8-understanding-concept-of-probabilities",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Counting Methods",
+      "v": "Probability of Two Distinct Events",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Counting Methods",
+      "v": "Probability of a Single Event",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Counting Methods",
+      "v": "Venn Diagram",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "D.4.8-understanding-concept-of-probabilities",
+      "v": "Probability of Two Distinct Events",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "D.4.8-understanding-concept-of-probabilities",
+      "v": "Probability of a Single Event",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "D.4.8-understanding-concept-of-probabilities",
+      "v": "Venn Diagram",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Distributive Property",
+      "v": "Equation Solving More Than Two Steps",
+      "relation": "similar",
+      "rationale": "代数化简与等式求解",
+      "confidence": 0.79
+    },
+    {
+      "u": "Distributive Property",
+      "v": "Equation Solving Two or Fewer Steps",
+      "relation": "similar",
+      "rationale": "代数化简与等式求解",
+      "confidence": 0.79
+    },
+    {
+      "u": "Divisibility Rules",
+      "v": "Greatest Common Factor",
+      "relation": "similar",
+      "rationale": "整除与因数倍数",
+      "confidence": 0.81
+    },
+    {
+      "u": "Divisibility Rules",
+      "v": "Least Common Multiple",
+      "relation": "similar",
+      "rationale": "整除与因数倍数",
+      "confidence": 0.81
+    },
+    {
+      "u": "Divisibility Rules",
+      "v": "Prime Number",
+      "relation": "similar",
+      "rationale": "整除与因数倍数",
+      "confidence": 0.81
+    },
+    {
+      "u": "Division Fractions",
+      "v": "Equivalent Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Division Fractions",
+      "v": "Fraction Of",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Division Fractions",
+      "v": "Multiplication Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Effect of Changing Dimensions of a Shape Prportionally",
+      "v": "Proportion",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Effect of Changing Dimensions of a Shape Prportionally",
+      "v": "Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Effect of Changing Dimensions of a Shape Prportionally",
+      "v": "Scale Factor",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Effect of Changing Dimensions of a Shape Prportionally",
+      "v": "Unit Conversion Within a System",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Effect of Changing Dimensions of a Shape Prportionally",
+      "v": "Unit Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Equation Solving More Than Two Steps",
+      "v": "Equation Solving Two or Fewer Steps",
+      "relation": "similar",
+      "rationale": "代数化简与等式求解",
+      "confidence": 0.79
+    },
+    {
+      "u": "Equivalent Fractions",
+      "v": "Fraction Of",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Equivalent Fractions",
+      "v": "Multiplication Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Estimation",
+      "v": "Rounding",
+      "relation": "similar",
+      "rationale": "近似与估计",
+      "confidence": 0.74
+    },
+    {
+      "u": "Exponents",
+      "v": "Scientific Notation",
+      "relation": "similar",
+      "rationale": "指数与表示法",
+      "confidence": 0.83
+    },
+    {
+      "u": "Exponents",
+      "v": "Simplifying Expressions positive exponents",
+      "relation": "similar",
+      "rationale": "指数与表示法",
+      "confidence": 0.83
+    },
+    {
+      "u": "Finding Percents",
+      "v": "Percent Discount",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Percents",
+      "v": "Percent Of",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Percents",
+      "v": "Percents",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Equation",
+      "v": "Finding Slope From Situation",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Equation",
+      "v": "Finding Slope from Ordered Pairs",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Equation",
+      "v": "Intercept",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Equation",
+      "v": "Slope",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Situation",
+      "v": "Finding Slope from Ordered Pairs",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Situation",
+      "v": "Intercept",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope From Situation",
+      "v": "Slope",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope from Ordered Pairs",
+      "v": "Intercept",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Finding Slope from Ordered Pairs",
+      "v": "Slope",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Fraction Of",
+      "v": "Multiplication Fractions",
+      "relation": "similar",
+      "rationale": "分数等值与四则范畴",
+      "confidence": 0.8
+    },
+    {
+      "u": "Greatest Common Factor",
+      "v": "Least Common Multiple",
+      "relation": "similar",
+      "rationale": "整除与因数倍数",
+      "confidence": 0.81
+    },
+    {
+      "u": "Greatest Common Factor",
+      "v": "Polynomial Factors",
+      "relation": "similar",
+      "rationale": "因式分解相关",
+      "confidence": 0.7
+    },
+    {
+      "u": "Greatest Common Factor",
+      "v": "Prime Number",
+      "relation": "similar",
+      "rationale": "整除与因数倍数",
+      "confidence": 0.81
+    },
+    {
+      "u": "Histogram as Table or Graph",
+      "v": "Scatter Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Histogram as Table or Graph",
+      "v": "Stem and Leaf Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Histogram as Table or Graph",
+      "v": "Table",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Intercept",
+      "v": "Slope",
+      "relation": "similar",
+      "rationale": "斜率多表征任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Interior Angles Figures with More than 3 Sides",
+      "v": "Interior Angles Triangle",
+      "relation": "similar",
+      "rationale": "角与内角性质",
+      "confidence": 0.78
+    },
+    {
+      "u": "Interpreting Coordinate Graphs",
+      "v": "Midpoint",
+      "relation": "similar",
+      "rationale": "坐标图解读与相关任务",
+      "confidence": 0.74
+    },
+    {
+      "u": "Interpreting Coordinate Graphs",
+      "v": "Scatter Plot",
+      "relation": "similar",
+      "rationale": "坐标图解读与相关任务",
+      "confidence": 0.74
+    },
+    {
+      "u": "Interpreting Coordinate Graphs",
+      "v": "Write Linear Equation from Graph",
+      "relation": "similar",
+      "rationale": "坐标图解读与相关任务",
+      "confidence": 0.74
+    },
+    {
+      "u": "Least Common Multiple",
+      "v": "Prime Number",
+      "relation": "similar",
+      "rationale": "整除与因数倍数",
+      "confidence": 0.81
+    },
+    {
+      "u": "Linear Equations",
+      "v": "Recognize Linear Pattern",
+      "relation": "similar",
+      "rationale": "线性模式与表达",
+      "confidence": 0.75
+    },
+    {
+      "u": "Mean",
+      "v": "Median",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Mean",
+      "v": "Mode",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Mean",
+      "v": "Range",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Median",
+      "v": "Mode",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Median",
+      "v": "Range",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Midpoint",
+      "v": "Scatter Plot",
+      "relation": "similar",
+      "rationale": "坐标图解读与相关任务",
+      "confidence": 0.74
+    },
+    {
+      "u": "Midpoint",
+      "v": "Write Linear Equation from Graph",
+      "relation": "similar",
+      "rationale": "坐标图解读与相关任务",
+      "confidence": 0.74
+    },
+    {
+      "u": "Mode",
+      "v": "Range",
+      "relation": "similar",
+      "rationale": "集中或离散度量",
+      "confidence": 0.75
+    },
+    {
+      "u": "Multiplication Whole Numbers",
+      "v": "Multiplication and Division Integers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Multiplication Whole Numbers",
+      "v": "Subtraction Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Multiplication and Division Integers",
+      "v": "Subtraction Whole Numbers",
+      "relation": "similar",
+      "rationale": "四则计算任务相近",
+      "confidence": 0.77
+    },
+    {
+      "u": "Nets of 3D Figures",
+      "v": "Surface Area Cylinder",
+      "relation": "similar",
+      "rationale": "展开图与表面积",
+      "confidence": 0.76
+    },
+    {
+      "u": "Nets of 3D Figures",
+      "v": "Surface Area Rectangular Prism",
+      "relation": "similar",
+      "rationale": "展开图与表面积",
+      "confidence": 0.76
+    },
+    {
+      "u": "Number Line",
+      "v": "Ordering Integers",
+      "relation": "similar",
+      "rationale": "基于数轴的大小与距离",
+      "confidence": 0.7
+    },
+    {
+      "u": "Order of Operations +,-,/,* () positive reals",
+      "v": "Order of Operations All",
+      "relation": "similar",
+      "rationale": "运算顺序与代数化简",
+      "confidence": 0.78
+    },
+    {
+      "u": "Ordering Fractions",
+      "v": "Ordering Integers",
+      "relation": "similar",
+      "rationale": "同属大小比较任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Ordering Fractions",
+      "v": "Ordering Positive Decimals",
+      "relation": "similar",
+      "rationale": "同属大小比较任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Ordering Fractions",
+      "v": "Ordering Real Numbers",
+      "relation": "similar",
+      "rationale": "同属大小比较任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Ordering Integers",
+      "v": "Ordering Positive Decimals",
+      "relation": "similar",
+      "rationale": "同属大小比较任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Ordering Integers",
+      "v": "Ordering Real Numbers",
+      "relation": "similar",
+      "rationale": "同属大小比较任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Ordering Positive Decimals",
+      "v": "Ordering Real Numbers",
+      "relation": "similar",
+      "rationale": "同属大小比较任务",
+      "confidence": 0.82
+    },
+    {
+      "u": "Percent Discount",
+      "v": "Percent Of",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Percent Discount",
+      "v": "Percents",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Percent Of",
+      "v": "Percents",
+      "relation": "similar",
+      "rationale": "百分相关表示与应用",
+      "confidence": 0.82
+    },
+    {
+      "u": "Probability of Two Distinct Events",
+      "v": "Probability of a Single Event",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Probability of Two Distinct Events",
+      "v": "Venn Diagram",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Probability of a Single Event",
+      "v": "Venn Diagram",
+      "relation": "similar",
+      "rationale": "概率概念与计数法",
+      "confidence": 0.82
+    },
+    {
+      "u": "Proportion",
+      "v": "Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Proportion",
+      "v": "Scale Factor",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Proportion",
+      "v": "Unit Conversion Within a System",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Proportion",
+      "v": "Unit Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Pythagorean Theorem",
+      "v": "Square Root",
+      "relation": "similar",
+      "rationale": "平方根与勾股",
+      "confidence": 0.73
+    },
+    {
+      "u": "Rate",
+      "v": "Scale Factor",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Rate",
+      "v": "Unit Conversion Within a System",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Rate",
+      "v": "Unit Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Reflection",
+      "v": "Rotations",
+      "relation": "similar",
+      "rationale": "平面刚体变换与全等",
+      "confidence": 0.79
+    },
+    {
+      "u": "Reflection",
+      "v": "Translations",
+      "relation": "similar",
+      "rationale": "平面刚体变换与全等",
+      "confidence": 0.79
+    },
+    {
+      "u": "Rotations",
+      "v": "Translations",
+      "relation": "similar",
+      "rationale": "平面刚体变换与全等",
+      "confidence": 0.79
+    },
+    {
+      "u": "Scale Factor",
+      "v": "Unit Conversion Within a System",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Scale Factor",
+      "v": "Unit Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Scatter Plot",
+      "v": "Stem and Leaf Plot",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Scatter Plot",
+      "v": "Table",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Scatter Plot",
+      "v": "Write Linear Equation from Graph",
+      "relation": "similar",
+      "rationale": "坐标图解读与相关任务",
+      "confidence": 0.74
+    },
+    {
+      "u": "Scientific Notation",
+      "v": "Simplifying Expressions positive exponents",
+      "relation": "similar",
+      "rationale": "指数与表示法",
+      "confidence": 0.83
+    },
+    {
+      "u": "Solving Systems of Linear Equations",
+      "v": "Solving Systems of Linear Equations by Graphing",
+      "relation": "similar",
+      "rationale": "方程组两类解法",
+      "confidence": 0.8
+    },
+    {
+      "u": "Stem and Leaf Plot",
+      "v": "Table",
+      "relation": "similar",
+      "rationale": "都是数据表示与解读方式",
+      "confidence": 0.78
+    },
+    {
+      "u": "Surface Area Cylinder",
+      "v": "Surface Area Rectangular Prism",
+      "relation": "similar",
+      "rationale": "三维图形表面积计算",
+      "confidence": 0.83
+    },
+    {
+      "u": "Surface Area Cylinder",
+      "v": "Surface Area Rectangular Prism",
+      "relation": "similar",
+      "rationale": "展开图与表面积",
+      "confidence": 0.76
+    },
+    {
+      "u": "Unit Conversion Within a System",
+      "v": "Unit Rate",
+      "relation": "similar",
+      "rationale": "比例率与缩放",
+      "confidence": 0.84
+    },
+    {
+      "u": "Volume Cylinder",
+      "v": "Volume Rectangular Prism",
+      "relation": "similar",
+      "rationale": "体积公式应用",
+      "confidence": 0.83
+    },
+    {
+      "u": "Volume Cylinder",
+      "v": "Volume Sphere",
+      "relation": "similar",
+      "rationale": "体积公式应用",
+      "confidence": 0.83
+    },
+    {
+      "u": "Volume Rectangular Prism",
+      "v": "Volume Sphere",
+      "relation": "similar",
+      "rationale": "体积公式应用",
+      "confidence": 0.83
+    },
+    {
+      "u": "Write Linear Equation from Graph",
+      "v": "Write Linear Equation from Ordered Pairs",
+      "relation": "similar",
+      "rationale": "线性方程表达任务",
+      "confidence": 0.84
+    },
+    {
+      "u": "Write Linear Equation from Graph",
+      "v": "Write Linear Equation from Situation",
+      "relation": "similar",
+      "rationale": "线性方程表达任务",
+      "confidence": 0.84
+    },
+    {
+      "u": "Write Linear Equation from Ordered Pairs",
+      "v": "Write Linear Equation from Situation",
+      "relation": "similar",
+      "rationale": "线性方程表达任务",
+      "confidence": 0.84
+    }
+  ]
+}

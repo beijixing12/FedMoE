@@ -1,0 +1,753 @@
+{
+  "prerequisite_edges": [
+    {
+      "head": "Number Line",
+      "tail": "Ordering Integers",
+      "relation": "prerequisite",
+      "rationale": "数轴支撑整数大小比较",
+      "confidence": 0.9
+    },
+    {
+      "head": "Number Line",
+      "tail": "Ordering Positive Decimals",
+      "relation": "prerequisite",
+      "rationale": "数轴支撑小数大小比较",
+      "confidence": 0.85
+    },
+    {
+      "head": "Number Line",
+      "tail": "Absolute Value",
+      "relation": "prerequisite",
+      "rationale": "绝对值为到零点距离",
+      "confidence": 0.9
+    },
+    {
+      "head": "Conversion of Fraction Decimals Percents",
+      "tail": "Ordering Fractions",
+      "relation": "prerequisite",
+      "rationale": "统一表示便于分数比较",
+      "confidence": 0.85
+    },
+    {
+      "head": "Equivalent Fractions",
+      "tail": "Ordering Fractions",
+      "relation": "prerequisite",
+      "rationale": "通分与等值比较是排序基础",
+      "confidence": 0.9
+    },
+    {
+      "head": "Ordering Fractions",
+      "tail": "Ordering Real Numbers",
+      "relation": "prerequisite",
+      "rationale": "分数比较融入实数比较",
+      "confidence": 0.7
+    },
+    {
+      "head": "Ordering Integers",
+      "tail": "Ordering Real Numbers",
+      "relation": "prerequisite",
+      "rationale": "整数比较是实数比较子集",
+      "confidence": 0.7
+    },
+    {
+      "head": "Ordering Positive Decimals",
+      "tail": "Ordering Real Numbers",
+      "relation": "prerequisite",
+      "rationale": "小数比较是实数比较子集",
+      "confidence": 0.7
+    },
+    {
+      "head": "Rounding",
+      "tail": "Estimation",
+      "relation": "prerequisite",
+      "rationale": "四舍五入支撑近似计算",
+      "confidence": 0.8
+    },
+    {
+      "head": "Addition Whole Numbers",
+      "tail": "Subtraction Whole Numbers",
+      "relation": "prerequisite",
+      "rationale": "加法理解帮助逆运算减法",
+      "confidence": 0.75
+    },
+    {
+      "head": "Addition Whole Numbers",
+      "tail": "Multiplication Whole Numbers",
+      "relation": "prerequisite",
+      "rationale": "乘法是重复加法",
+      "confidence": 0.8
+    },
+    {
+      "head": "Multiplication Whole Numbers",
+      "tail": "Multiplication and Division Integers",
+      "relation": "prerequisite",
+      "rationale": "扩展到带符号整数",
+      "confidence": 0.8
+    },
+    {
+      "head": "Subtraction Whole Numbers",
+      "tail": "Addition and Subtraction Integers",
+      "relation": "prerequisite",
+      "rationale": "迁移到有符号数",
+      "confidence": 0.8
+    },
+    {
+      "head": "Addition and Subtraction Positive Decimals",
+      "tail": "Multiplication and Division Positive Decimals",
+      "relation": "prerequisite",
+      "rationale": "先掌握小数加减再乘除",
+      "confidence": 0.75
+    },
+    {
+      "head": "Equivalent Fractions",
+      "tail": "Addition and Subtraction Fractions",
+      "relation": "prerequisite",
+      "rationale": "通分与约分是前提",
+      "confidence": 0.95
+    },
+    {
+      "head": "Least Common Multiple",
+      "tail": "Addition and Subtraction Fractions",
+      "relation": "prerequisite",
+      "rationale": "最小公倍数用于通分",
+      "confidence": 0.95
+    },
+    {
+      "head": "Greatest Common Factor",
+      "tail": "Equivalent Fractions",
+      "relation": "prerequisite",
+      "rationale": "约分依赖公因数",
+      "confidence": 0.9
+    },
+    {
+      "head": "Multiplication Fractions",
+      "tail": "Division Fractions",
+      "relation": "prerequisite",
+      "rationale": "分数除法转乘倒数",
+      "confidence": 0.9
+    },
+    {
+      "head": "Order of Operations +,-,/,* () positive reals",
+      "tail": "Order of Operations All",
+      "relation": "prerequisite",
+      "rationale": "从正实数到一般情形",
+      "confidence": 0.85
+    },
+    {
+      "head": "Order of Operations All",
+      "tail": "Algebraic Simplification",
+      "relation": "prerequisite",
+      "rationale": "代数化简依赖运算优先级",
+      "confidence": 0.85
+    },
+    {
+      "head": "Order of Operations All",
+      "tail": "Computation with Real Numbers",
+      "relation": "prerequisite",
+      "rationale": "实数混合运算遵循运算律",
+      "confidence": 0.85
+    },
+    {
+      "head": "Multiplication and Division Integers",
+      "tail": "Computation with Real Numbers",
+      "relation": "prerequisite",
+      "rationale": "整数四则融入实数计算",
+      "confidence": 0.75
+    },
+    {
+      "head": "Multiplication and Division Positive Decimals",
+      "tail": "Computation with Real Numbers",
+      "relation": "prerequisite",
+      "rationale": "小数乘除是实数计算基础",
+      "confidence": 0.75
+    },
+    {
+      "head": "Fraction Of",
+      "tail": "Percent Of",
+      "relation": "prerequisite",
+      "rationale": "把握整体与部分关系",
+      "confidence": 0.85
+    },
+    {
+      "head": "Conversion of Fraction Decimals Percents",
+      "tail": "Percent Of",
+      "relation": "prerequisite",
+      "rationale": "百分比与分数十进制互化",
+      "confidence": 0.9
+    },
+    {
+      "head": "Percent Of",
+      "tail": "Finding Percents",
+      "relation": "prerequisite",
+      "rationale": "先会求某数的百分之几",
+      "confidence": 0.95
+    },
+    {
+      "head": "Proportion",
+      "tail": "Finding Percents",
+      "relation": "prerequisite",
+      "rationale": "比例解题支持百分问题",
+      "confidence": 0.85
+    },
+    {
+      "head": "Proportion",
+      "tail": "Unit Rate",
+      "relation": "prerequisite",
+      "rationale": "比与比例推导单位率",
+      "confidence": 0.9
+    },
+    {
+      "head": "Proportion",
+      "tail": "Rate",
+      "relation": "prerequisite",
+      "rationale": "比与比例定义速率",
+      "confidence": 0.85
+    },
+    {
+      "head": "Unit Conversion Within a System",
+      "tail": "Unit Rate",
+      "relation": "prerequisite",
+      "rationale": "统一单位后求单位率",
+      "confidence": 0.8
+    },
+    {
+      "head": "Unit Conversion Within a System",
+      "tail": "Rate",
+      "relation": "prerequisite",
+      "rationale": "单位换算支撑速率",
+      "confidence": 0.8
+    },
+    {
+      "head": "Percent Of",
+      "tail": "Percents",
+      "relation": "prerequisite",
+      "rationale": "百分概念的核心操作",
+      "confidence": 0.85
+    },
+    {
+      "head": "Percents",
+      "tail": "Percent Discount",
+      "relation": "prerequisite",
+      "rationale": "打折属于百分应用",
+      "confidence": 0.95
+    },
+    {
+      "head": "Divisibility Rules",
+      "tail": "Prime Number",
+      "relation": "prerequisite",
+      "rationale": "判定质数需整除性",
+      "confidence": 0.8
+    },
+    {
+      "head": "Prime Number",
+      "tail": "Greatest Common Factor",
+      "relation": "prerequisite",
+      "rationale": "分解质因数求GCF",
+      "confidence": 0.9
+    },
+    {
+      "head": "Prime Number",
+      "tail": "Least Common Multiple",
+      "relation": "prerequisite",
+      "rationale": "质因数法求LCM",
+      "confidence": 0.9
+    },
+    {
+      "head": "Greatest Common Factor",
+      "tail": "Algebraic Simplification",
+      "relation": "prerequisite",
+      "rationale": "提取公因数化简",
+      "confidence": 0.75
+    },
+    {
+      "head": "Prime Number",
+      "tail": "Polynomial Factors",
+      "relation": "prerequisite",
+      "rationale": "整数分解支撑多项式因式",
+      "confidence": 0.7
+    },
+    {
+      "head": "Exponents",
+      "tail": "Scientific Notation",
+      "relation": "prerequisite",
+      "rationale": "科学计数法依赖指数",
+      "confidence": 0.9
+    },
+    {
+      "head": "Exponents",
+      "tail": "Simplifying Expressions positive exponents",
+      "relation": "prerequisite",
+      "rationale": "指数运算规则前置",
+      "confidence": 0.95
+    },
+    {
+      "head": "Square Root",
+      "tail": "Pythagorean Theorem",
+      "relation": "prerequisite",
+      "rationale": "勾股定理需平方根",
+      "confidence": 0.95
+    },
+    {
+      "head": "Reading a Ruler or Scale",
+      "tail": "Perimeter of a Polygon",
+      "relation": "prerequisite",
+      "rationale": "度量线段求周长",
+      "confidence": 0.85
+    },
+    {
+      "head": "Reading a Ruler or Scale",
+      "tail": "Area Rectangle",
+      "relation": "prerequisite",
+      "rationale": "测量边长求面积",
+      "confidence": 0.8
+    },
+    {
+      "head": "Circumference",
+      "tail": "Area Circle",
+      "relation": "prerequisite",
+      "rationale": "掌握周长后理解面积公式",
+      "confidence": 0.75
+    },
+    {
+      "head": "Area Rectangle",
+      "tail": "Surface Area Rectangular Prism",
+      "relation": "prerequisite",
+      "rationale": "面到表面积过渡",
+      "confidence": 0.8
+    },
+    {
+      "head": "Area Circle",
+      "tail": "Surface Area Cylinder",
+      "relation": "prerequisite",
+      "rationale": "圆面积用于圆柱侧/底面积",
+      "confidence": 0.85
+    },
+    {
+      "head": "Area Circle",
+      "tail": "Volume Cylinder",
+      "relation": "prerequisite",
+      "rationale": "底面积×高",
+      "confidence": 0.9
+    },
+    {
+      "head": "Area Rectangle",
+      "tail": "Volume Rectangular Prism",
+      "relation": "prerequisite",
+      "rationale": "底面积×高",
+      "confidence": 0.85
+    },
+    {
+      "head": "Nets of 3D Figures",
+      "tail": "Surface Area Rectangular Prism",
+      "relation": "prerequisite",
+      "rationale": "展开图帮助表面积",
+      "confidence": 0.85
+    },
+    {
+      "head": "Nets of 3D Figures",
+      "tail": "Surface Area Cylinder",
+      "relation": "prerequisite",
+      "rationale": "展开图理解侧面积",
+      "confidence": 0.8
+    },
+    {
+      "head": "Area Circle",
+      "tail": "Volume Sphere",
+      "relation": "prerequisite",
+      "rationale": "半径与π概念过渡",
+      "confidence": 0.6
+    },
+    {
+      "head": "Proportion",
+      "tail": "Scale Factor",
+      "relation": "prerequisite",
+      "rationale": "比例支撑缩放倍数",
+      "confidence": 0.9
+    },
+    {
+      "head": "Scale Factor",
+      "tail": "Calculations with Similar Figures",
+      "relation": "prerequisite",
+      "rationale": "相似计算依赖缩放因子",
+      "confidence": 0.95
+    },
+    {
+      "head": "Scale Factor",
+      "tail": "Effect of Changing Dimensions of a Shape Prportionally",
+      "relation": "prerequisite",
+      "rationale": "尺寸缩放影响度量",
+      "confidence": 0.9
+    },
+    {
+      "head": "Angles - Obtuse, Acute, and Right",
+      "tail": "Interior Angles Triangle",
+      "relation": "prerequisite",
+      "rationale": "先辨角再求三角内角",
+      "confidence": 0.85
+    },
+    {
+      "head": "Interior Angles Triangle",
+      "tail": "Interior Angles Figures with More than 3 Sides",
+      "relation": "prerequisite",
+      "rationale": "多边形内角和拆三角",
+      "confidence": 0.85
+    },
+    {
+      "head": "Complementary and Supplementary Angles",
+      "tail": "Angles on Parallel Lines Cut by a Transversal",
+      "relation": "prerequisite",
+      "rationale": "余补角关系作铺垫",
+      "confidence": 0.85
+    },
+    {
+      "head": "Angles - Obtuse, Acute, and Right",
+      "tail": "Pythagorean Theorem",
+      "relation": "prerequisite",
+      "rationale": "直角概念为前提",
+      "confidence": 0.8
+    },
+    {
+      "head": "Rotations",
+      "tail": "Congruence",
+      "relation": "prerequisite",
+      "rationale": "刚体变换保持全等",
+      "confidence": 0.85
+    },
+    {
+      "head": "Reflection",
+      "tail": "Congruence",
+      "relation": "prerequisite",
+      "rationale": "镜像保持形状与大小",
+      "confidence": 0.85
+    },
+    {
+      "head": "Translations",
+      "tail": "Congruence",
+      "relation": "prerequisite",
+      "rationale": "平移保持形状与大小",
+      "confidence": 0.85
+    },
+    {
+      "head": "Table",
+      "tail": "Mean",
+      "relation": "prerequisite",
+      "rationale": "从表取数计算平均",
+      "confidence": 0.7
+    },
+    {
+      "head": "Table",
+      "tail": "Median",
+      "relation": "prerequisite",
+      "rationale": "排序找中位需数据表",
+      "confidence": 0.7
+    },
+    {
+      "head": "Table",
+      "tail": "Mode",
+      "relation": "prerequisite",
+      "rationale": "统计频数需整理数据",
+      "confidence": 0.7
+    },
+    {
+      "head": "Table",
+      "tail": "Range",
+      "relation": "prerequisite",
+      "rationale": "取极值差需整理数据",
+      "confidence": 0.7
+    },
+    {
+      "head": "Interpreting Coordinate Graphs",
+      "tail": "Scatter Plot",
+      "relation": "prerequisite",
+      "rationale": "坐标系解读支撑散点图",
+      "confidence": 0.8
+    },
+    {
+      "head": "Scatter Plot",
+      "tail": "Pattern Finding",
+      "relation": "prerequisite",
+      "rationale": "观察点型以寻模式",
+      "confidence": 0.7
+    },
+    {
+      "head": "Histogram as Table or Graph",
+      "tail": "Box and Whisker",
+      "relation": "prerequisite",
+      "rationale": "分布视角过渡",
+      "confidence": 0.6
+    },
+    {
+      "head": "D.4.8-understanding-concept-of-probabilities",
+      "tail": "Probability of a Single Event",
+      "relation": "prerequisite",
+      "rationale": "概率基本概念先行",
+      "confidence": 0.9
+    },
+    {
+      "head": "Probability of a Single Event",
+      "tail": "Probability of Two Distinct Events",
+      "relation": "prerequisite",
+      "rationale": "单事件到复合事件",
+      "confidence": 0.9
+    },
+    {
+      "head": "Counting Methods",
+      "tail": "Probability of Two Distinct Events",
+      "relation": "prerequisite",
+      "rationale": "计数法用于复合概率",
+      "confidence": 0.9
+    },
+    {
+      "head": "Venn Diagram",
+      "tail": "Probability of Two Distinct Events",
+      "relation": "prerequisite",
+      "rationale": "集合并交辅助计算",
+      "confidence": 0.8
+    },
+    {
+      "head": "Interpreting Coordinate Graphs",
+      "tail": "Intercept",
+      "relation": "prerequisite",
+      "rationale": "读图识截距",
+      "confidence": 0.85
+    },
+    {
+      "head": "Interpreting Coordinate Graphs",
+      "tail": "Slope",
+      "relation": "prerequisite",
+      "rationale": "斜率来源于坐标变化",
+      "confidence": 0.9
+    },
+    {
+      "head": "Rate",
+      "tail": "Finding Slope From Situation",
+      "relation": "prerequisite",
+      "rationale": "斜率即单位变化率",
+      "confidence": 0.85
+    },
+    {
+      "head": "Unit Rate",
+      "tail": "Finding Slope From Situation",
+      "relation": "prerequisite",
+      "rationale": "单位率转化为斜率",
+      "confidence": 0.8
+    },
+    {
+      "head": "Interpreting Coordinate Graphs",
+      "tail": "Finding Slope from Ordered Pairs",
+      "relation": "prerequisite",
+      "rationale": "两点坐标求斜率",
+      "confidence": 0.9
+    },
+    {
+      "head": "Linear Equations",
+      "tail": "Solving Systems of Linear Equations by Graphing",
+      "relation": "prerequisite",
+      "rationale": "先会一元线性再到联立",
+      "confidence": 0.9
+    },
+    {
+      "head": "Solving Systems of Linear Equations by Graphing",
+      "tail": "Solving Systems of Linear Equations",
+      "relation": "prerequisite",
+      "rationale": "图解到代数解",
+      "confidence": 0.85
+    },
+    {
+      "head": "Slope",
+      "tail": "Write Linear Equation from Ordered Pairs",
+      "relation": "prerequisite",
+      "rationale": "斜率决定直线倾斜",
+      "confidence": 0.9
+    },
+    {
+      "head": "Intercept",
+      "tail": "Write Linear Equation from Ordered Pairs",
+      "relation": "prerequisite",
+      "rationale": "截距定位直线",
+      "confidence": 0.85
+    },
+    {
+      "head": "Slope",
+      "tail": "Write Linear Equation from Graph",
+      "relation": "prerequisite",
+      "rationale": "读斜率写方程",
+      "confidence": 0.9
+    },
+    {
+      "head": "Intercept",
+      "tail": "Write Linear Equation from Graph",
+      "relation": "prerequisite",
+      "rationale": "读截距写方程",
+      "confidence": 0.85
+    },
+    {
+      "head": "Slope",
+      "tail": "Write Linear Equation from Situation",
+      "relation": "prerequisite",
+      "rationale": "从变化率写方程",
+      "confidence": 0.85
+    },
+    {
+      "head": "Intercept",
+      "tail": "Write Linear Equation from Situation",
+      "relation": "prerequisite",
+      "rationale": "情境中的初值",
+      "confidence": 0.8
+    },
+    {
+      "head": "Recognize Linear Pattern",
+      "tail": "Linear Equations",
+      "relation": "prerequisite",
+      "rationale": "模式识别到明式",
+      "confidence": 0.75
+    },
+    {
+      "head": "Finding Slope From Equation",
+      "tail": "Linear Equations",
+      "relation": "prerequisite",
+      "rationale": "式到斜率再理解直线",
+      "confidence": 0.7
+    },
+    {
+      "head": "Interpreting Coordinate Graphs",
+      "tail": "Midpoint",
+      "relation": "prerequisite",
+      "rationale": "坐标系中点公式",
+      "confidence": 0.85
+    },
+    {
+      "head": "Linear Equations",
+      "tail": "Choose an Equation from Given Information",
+      "relation": "prerequisite",
+      "rationale": "先理解线性再选式",
+      "confidence": 0.8
+    },
+    {
+      "head": "Slope",
+      "tail": "Choose an Equation from Given Information",
+      "relation": "prerequisite",
+      "rationale": "斜率信息指导选式",
+      "confidence": 0.75
+    },
+    {
+      "head": "Intercept",
+      "tail": "Choose an Equation from Given Information",
+      "relation": "prerequisite",
+      "rationale": "截距信息指导选式",
+      "confidence": 0.75
+    },
+    {
+      "head": "Distributive Property",
+      "tail": "Equation Solving Two or Fewer Steps",
+      "relation": "prerequisite",
+      "rationale": "移项与展开常用",
+      "confidence": 0.8
+    },
+    {
+      "head": "Equation Solving Two or Fewer Steps",
+      "tail": "Equation Solving More Than Two Steps",
+      "relation": "prerequisite",
+      "rationale": "由简到繁",
+      "confidence": 0.9
+    },
+    {
+      "head": "Equation Solving More Than Two Steps",
+      "tail": "Algebraic Solving",
+      "relation": "prerequisite",
+      "rationale": "多步方程到一般代数解",
+      "confidence": 0.85
+    },
+    {
+      "head": "Algebraic Simplification",
+      "tail": "Algebraic Solving",
+      "relation": "prerequisite",
+      "rationale": "化简后再求解",
+      "confidence": 0.8
+    },
+    {
+      "head": "Linear Equations",
+      "tail": "Solving Inequalities",
+      "relation": "prerequisite",
+      "rationale": "不等式解法类比等式",
+      "confidence": 0.75
+    },
+    {
+      "head": "Exponents",
+      "tail": "Quadratic Formula to Solve Quadratic Equation",
+      "relation": "prerequisite",
+      "rationale": "二次式含指数运算",
+      "confidence": 0.7
+    },
+    {
+      "head": "Order of Operations All",
+      "tail": "Quadratic Formula to Solve Quadratic Equation",
+      "relation": "prerequisite",
+      "rationale": "代入与计算需运算顺序",
+      "confidence": 0.7
+    },
+    {
+      "head": "Recognize Quadratic Pattern",
+      "tail": "Quadratic Formula to Solve Quadratic Equation",
+      "relation": "prerequisite",
+      "rationale": "先识别二次再代公式",
+      "confidence": 0.75
+    },
+    {
+      "head": "Perimeter of a Polygon",
+      "tail": "Area Rectangle",
+      "relation": "prerequisite",
+      "rationale": "周长与边长先行",
+      "confidence": 0.65
+    },
+    {
+      "head": "Area Rectangle",
+      "tail": "Area Parallelogram",
+      "relation": "prerequisite",
+      "rationale": "平移剪拼到平行四边形",
+      "confidence": 0.7
+    },
+    {
+      "head": "Area Rectangle",
+      "tail": "Area Triangle",
+      "relation": "prerequisite",
+      "rationale": "矩形对折得三角面积",
+      "confidence": 0.7
+    },
+    {
+      "head": "Area Rectangle",
+      "tail": "Area Trapezoid",
+      "relation": "prerequisite",
+      "rationale": "平行底平均得梯形面积",
+      "confidence": 0.65
+    },
+    {
+      "head": "Table",
+      "tail": "Histogram as Table or Graph",
+      "relation": "prerequisite",
+      "rationale": "频数表到直方图",
+      "confidence": 0.7
+    },
+    {
+      "head": "Table",
+      "tail": "Stem and Leaf Plot",
+      "relation": "prerequisite",
+      "rationale": "原始数据到茎叶图",
+      "confidence": 0.7
+    },
+    {
+      "head": "Table",
+      "tail": "Box and Whisker",
+      "relation": "prerequisite",
+      "rationale": "数据五数概括需整理",
+      "confidence": 0.7
+    },
+    {
+      "head": "Table",
+      "tail": "Circle Graph",
+      "relation": "prerequisite",
+      "rationale": "类别频数到饼图",
+      "confidence": 0.65
+    }
+  ]
+}
