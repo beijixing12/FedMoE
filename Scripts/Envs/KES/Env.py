@@ -28,8 +28,9 @@ class KESEnv():
         dataset_name='assist09',
         concept_exercise_map=None,
         mastery_threshold=0.8,
+        skill_num_override=None,
     ):
-        self.skill_num = dataset.feats_num
+        self.skill_num = dataset.feats_num if skill_num_override is None else skill_num_override
         self.model = load_d_agent(model_name, dataset_name, self.skill_num)
         self.targets = None
         self.states = (None, None)

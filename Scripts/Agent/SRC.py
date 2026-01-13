@@ -193,22 +193,6 @@ class SRC(nn.Module):
                     RuntimeWarning,
                 )
 
-        # prerequisite_graph_file = '/home/zengxiangyu/SRC-py/data/assist09/prerequisites_graph.json'
-        # similarity_graph_file = '/home/zengxiangyu/SRC-py/data/assist09/similarity_graph.json'
-        # hetero_graph_file = '/home/zengxiangyu/SRC-py/data/assist09/hetero_graph.json'
-
-        # prerequisite_graph_file = '/home/zengxiangyu/SRC-py/data/assist12/prerequisites_graph.json'
-        # similarity_graph_file = '/home/zengxiangyu/SRC-py/data/assist12/similarity_graph.json'
-        # hetero_graph_file = '/home/zengxiangyu/SRC-py/data/assist12/assist12_hetero_graph.json'
-
-        prerequisite_graph_file = '/home/zengxiangyu/SRC-py/data/OLI/prerequisites_graph.json'
-        similarity_graph_file = '/home/zengxiangyu/SRC-py/data/OLI/similarity_graph.json'
-        hetero_graph_file = '/home/zengxiangyu/SRC-py/data/OLI/OLI_hetero_graph.json'
-
-
-        # prerequisite_graph_file = '/home/zengxiangyu/SRC-py/data/assist17/prerequisites_graph_dense.json'
-        # similarity_graph_file = '/home/zengxiangyu/SRC-py/data/assist17/similarity_graph_dense.json'
-
         prerequisite_graph = load_prerequisite_graph(prerequisite_graph_file)
         similarity_graph = load_similarity_graph(similarity_graph_file)
 
