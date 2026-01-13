@@ -108,6 +108,18 @@ def build_server_prototypes(model, payload_path: str) -> torch.Tensor:
     return prototype_state.prototypes
 
 
+def _resolve_global_skill_num(args, datasets) -> int:
+    if args.global_skill_num is not None:
+        max_skill = max(dataset.feats_num for dataset in datasets)
+        if args.global_skill_num < max_skill:
+            raise ValueError(
+                "global_skill_num cannot be smaller than the maximum client skill count "
+                f"({args.global_skill_num} < {max_skill})."
+            )
+        return args.global_skill_num
+    return max(dataset.feats_num for dataset in datasets)
+
+
 def run_federated(args):
     from KTScripts.DataLoader import KTDataset
 
@@ -122,19 +134,21 @@ def run_federated(args):
         if not args.data_dir or not args.dataset:
             raise ValueError("Both data_dir and dataset are required for federated training.")
         client_files = [Path(f"{args.data_dir}/{args.dataset}")]
+    datasets = [KTDataset(str(path)) for path in client_files]
+    global_skill_num = _resolve_global_skill_num(args, datasets)
     envs: List[KESEnv] = []
     models = []
     for idx in range(args.clients):
-        dataset_path = client_files[idx % len(client_files)]
-        dataset = KTDataset(str(dataset_path))
+        dataset = datasets[idx % len(datasets)]
         env = KESEnv(
             dataset,
             args.model,
             args.dataset,
             concept_exercise_map=args.concept_exercise_map,
             mastery_threshold=args.mastery_threshold,
+            skill_num_override=global_skill_num,
         )
-        args.skill_num = env.skill_num
+        args.skill_num = global_skill_num
         model = load_agent(args).to(args.device)
         envs.append(env)
         models.append(model)
@@ -203,6 +217,12 @@ if __name__ == "__main__":
     parser.add_argument("--mu_stage1", type=float, default=0.2)
     parser.add_argument("--mu_stage2", type=float, default=0.8)
     parser.add_argument("--local_epochs", type=int, default=1)
+    parser.add_argument(
+        "--global_skill_num",
+        type=int,
+        default=None,
+        help="Override to use a global concept count across clients.",
+    )
     parser.add_argument(
         "--client_data_dir",
         type=str,
