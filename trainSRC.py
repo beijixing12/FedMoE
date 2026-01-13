@@ -50,6 +50,64 @@ def _configure_optimizer(model, lr):
     return Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
 
 
+def train_one_client(model, env, args, local_epochs):
+    model.train()
+    criterion = pl_loss
+    model_with_loss = ModelWithLoss(model, criterion)
+    stage1_epochs = min(args.stage1_epochs or 0, local_epochs)
+    stage2_epochs = local_epochs - stage1_epochs
+    total_epochs = stage1_epochs + stage2_epochs
+    if total_epochs == 0:
+        total_epochs = local_epochs
+        stage2_epochs = total_epochs
+    expert_id = 0
+    skill_num, batch_size = args.skill_num, args.batch_size
+    steps_per_epoch = 200
+    for epoch in range(total_epochs):
+        if epoch < stage1_epochs:
+            model.freeze_expert_params()
+            optimizer = _configure_optimizer(model, args.lr)
+        else:
+            model.unfreeze_expert_params()
+            optimizer = _configure_optimizer(model, args.lr)
+        scheduler = LambdaLR(optimizer, lr_lambda=lambda step: (1 - min(step, 200) / 200) ** 0.5)
+        model_train = ModelWithOptimizer(model_with_loss, optimizer)
+        for _ in range(steps_per_epoch):
+            targets, initial_logs, origin_path = get_data(
+                batch_size, skill_num, 3, 10, args.path, args.steps
+            )
+            targets = targets.to(args.device)
+            initial_logs = initial_logs.to(args.device)
+            origin_path = origin_path.to(args.device)
+            initial_log_scores = env.begin_episode(targets, initial_logs)
+            data = (targets, initial_logs, initial_log_scores, origin_path, args.steps)
+            result = model(*data, expert_id=expert_id)
+            scores = env.n_step(result[0], binary=args.binary)
+            rewards = env.end_episode()
+            if args.concept_exercise_map:
+                _, _, routed_experts = env.run_micro_loop(model, result[0], device=args.device)
+                expert_id = int(routed_experts[0, -1].item())
+            rewards_tensor = (
+                rewards.to(args.device)
+                if isinstance(rewards, torch.Tensor)
+                else torch.tensor(rewards, device=args.device)
+            )
+            if epoch < stage1_epochs and args.withKT:
+                kt_output = result[3]
+                kt_targets = scores.to(args.device)
+                if kt_targets.dim() == 2:
+                    kt_targets = kt_targets.unsqueeze(-1)
+                loss = F.binary_cross_entropy(kt_output, kt_targets)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+            else:
+                model_train(*data[:-1], result[2], rewards_tensor)
+        scheduler.step()
+    sample_count = total_epochs * steps_per_epoch * batch_size
+    return model.state_dict(), sample_count
+
+
 def _train_and_evaluate(args, run_idx, run_seed):
     print('=' * 20 + f' Run {run_idx + 1}/{args.num_runs} ' + '=' * 20)
     if run_seed >= 0:
