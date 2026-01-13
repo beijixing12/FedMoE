@@ -121,7 +121,12 @@ def _write_school_npz(
     np.savez_compressed(output_path, **payload)
 
 
-def split_dataset_by_school(npz_path: Path, mapping_path: Path, output_dir: Path) -> None:
+def split_dataset_by_school(
+    npz_path: Path,
+    mapping_path: Path,
+    output_dir: Path,
+    min_students: int,
+) -> None:
     skill_key, label_key, length_key, skills, labels, lengths, user_ids = _load_dataset(npz_path)
     user_key = None
     if user_ids is not None:
@@ -129,6 +134,8 @@ def split_dataset_by_school(npz_path: Path, mapping_path: Path, output_dir: Path
     mapping = _load_mapping(mapping_path)
     user_index = _index_users(user_ids, len(skills))
     for school, users in mapping.items():
+        if len(users) < min_students:
+            continue
         indices = []
         for user_id in users:
             if user_id not in user_index:
@@ -159,11 +166,17 @@ def main() -> None:
     parser.add_argument("--input", required=True, help="Path to the dataset .npz archive")
     parser.add_argument("--mapping", required=True, help="JSON/CSV mapping of user_id to school")
     parser.add_argument("--output_dir", required=True, help="Directory to write per-school .npz files")
+    parser.add_argument(
+        "--min_students",
+        type=int,
+        default=20,
+        help="Minimum number of students required to keep a school",
+    )
     args = parser.parse_args()
     npz_path = Path(args.input)
     mapping_path = Path(args.mapping)
     output_dir = Path(args.output_dir)
-    split_dataset_by_school(npz_path, mapping_path, output_dir)
+    split_dataset_by_school(npz_path, mapping_path, output_dir, args.min_students)
 
 
 if __name__ == "__main__":
