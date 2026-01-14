@@ -288,10 +288,12 @@ class SRC(nn.Module):
         self.num_exercises = num_exercises
         self.prototypes = nn.Parameter(torch.randn(num_experts, hidden_size))
         self.router_head = nn.Linear(hidden_size * 2, 1)
+        self.kt_router_proj = nn.Linear(1, hidden_size)
         self.zpd_tau = zpd_tau
         self._graph_embeddings = None
         self._latest_state_output = None
         self._latest_states = None
+        self._latest_kt_prob = None
 
     def forward(self, targets, initial_logs, initial_log_scores, origin_path, n, expert_id=0):
         """Alias for :meth:`construct` so the module can be invoked directly."""
@@ -303,6 +305,7 @@ class SRC(nn.Module):
         batch_size = targets.size(0)
         if initial_logs is not None:
             self.step(initial_logs, initial_log_scores, None)
+        self._latest_kt_prob = self._extract_kt_prob(initial_log_scores)
         if expert_id is None:
             raise ValueError("expert_id must be provided; call route_expert() after micro-loop.")
         resolved_expert_id = self._resolve_expert_id(expert_id, batch_size)
@@ -317,6 +320,8 @@ class SRC(nn.Module):
         x_embed = self._embed_indices(x)
         if score is None:
             score = torch.zeros_like(x_embed[..., 0], dtype=x_embed.dtype, device=x_embed.device)
+        else:
+            self._latest_kt_prob = self._extract_kt_prob(score)
         score = score.to(x_embed.dtype)
         target_shape = x_embed.shape[:-1] + (1,)
         score_dims = score.dim()
@@ -340,6 +345,8 @@ class SRC(nn.Module):
         x_embed = self._embed_indices(x)
         if score is None:
             score = torch.zeros_like(x_embed[..., 0], dtype=x_embed.dtype, device=x_embed.device)
+        else:
+            self._latest_kt_prob = self._extract_kt_prob(score)
         score = score.to(x_embed.dtype)
         target_shape = x_embed.shape[:-1] + (1,)
         score_dims = score.dim()
@@ -482,11 +489,13 @@ class SRC(nn.Module):
         if expert_id is not None:
             self._get_expert_modules(expert_id)
             return expert_id
-        if self._latest_state_output is None:
+        if self._latest_state_output is None and self._latest_kt_prob is None:
             return 0
         if batch_size != 1:
             raise ValueError("expert_id=None requires batch_size=1 for routing.")
-        h_t = self._latest_state_output[:, -1, :]
+        h_t = self._get_router_state(self._latest_state_output)
+        if h_t is None:
+            return 0
         prototypes = self.prototypes.unsqueeze(0).expand(h_t.shape[0], -1, -1)
         h_t = h_t.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
         router_input = torch.cat((h_t, prototypes), dim=-1)
@@ -502,12 +511,11 @@ class SRC(nn.Module):
         return self._resolve_expert_id(None, batch_size)
 
     def route_expert_with_state(self, state_output):
-        if state_output.dim() == 3:
-            state_output = state_output[:, -1, :]
-        if state_output.dim() != 2:
+        h_t = self._get_router_state(state_output)
+        if h_t is None:
             raise ValueError("state_output must be (B, H) or (B, T, H).")
-        prototypes = self.prototypes.unsqueeze(0).expand(state_output.shape[0], -1, -1)
-        h_t = state_output.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
+        prototypes = self.prototypes.unsqueeze(0).expand(h_t.shape[0], -1, -1)
+        h_t = h_t.unsqueeze(1).expand(-1, prototypes.shape[1], -1)
         router_input = torch.cat((h_t, prototypes), dim=-1)
         if self.withKt:
             logits = self.kt_exercise_proj(router_input).squeeze(-1)
@@ -516,6 +524,37 @@ class SRC(nn.Module):
         probs = torch.sigmoid(logits)
         distances = torch.abs(probs - self.zpd_tau)
         return torch.argmin(distances, dim=1)
+
+    def _extract_kt_prob(self, scores):
+        if scores is None:
+            return None
+        if not torch.is_tensor(scores):
+            scores = torch.as_tensor(scores)
+        scores = scores.float()
+        if scores.dim() == 1:
+            prob = scores
+        elif scores.dim() == 2:
+            prob = scores[:, -1]
+        else:
+            if scores.shape[-1] == 1:
+                prob = scores[:, -1, 0]
+            else:
+                prob = scores[:, -1].mean(dim=-1)
+        return prob.unsqueeze(-1)
+
+    def _get_router_state(self, state_output):
+        if self._latest_kt_prob is not None:
+            kt_prob = self._latest_kt_prob
+            if kt_prob.dim() == 1:
+                kt_prob = kt_prob.unsqueeze(-1)
+            return self.kt_router_proj(kt_prob.to(self.prototypes.device))
+        if state_output is None:
+            return None
+        if state_output.dim() == 3:
+            state_output = state_output[:, -1, :]
+        if state_output.dim() != 2:
+            return None
+        return state_output
 
     def update_prototypes(self, prototypes: torch.Tensor):
         if prototypes.dim() != 2:
